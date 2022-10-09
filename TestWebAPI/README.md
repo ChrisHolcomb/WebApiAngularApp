@@ -7,7 +7,7 @@ First, create the docker image from the Dockerfile. From the project root run
 ```text
 docker build -t hero.webapi:0.0.1 .
 ```
-Once the image is build you can run the image in docker with
+Once the image is built you can run the image in docker with
 ```text
 docker run -it --rm --name hero-web-api -p 7000:7000  hero.webapi:0.0.1
 ```
