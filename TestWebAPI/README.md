@@ -3,7 +3,7 @@
 Creates a .Net Core 6 Web Api backend for the Angular Tour of Heroes Tutorial
 
 # Docker 
-First, create the docker image from the Dockerfile. From the project root
+First, create the docker image from the Dockerfile. From the project root run
 ```text
 docker build -t hero.webapi:0.0.1 .
 ```
