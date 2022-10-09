@@ -2,6 +2,19 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.8.
 
+# Docker
+First, create the docker image from the Dockerfile. from the project root
+```text
+docker build -t hero.webapp:0.0.1 .
+```
+Once the image is build you can run the image in docker with
+```text
+docker run -it --rm --name hero-web-app -p 7001:80  hero.webapp:0.0.1
+```
+This will start the docker container in Interactive Mode meaning when you press Ctrl + C it will terminate the docker container and the app sill stop. If you want to run it in Detached mode then replace "-it" with "-d".
+
+
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
