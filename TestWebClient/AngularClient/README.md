@@ -3,11 +3,11 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.8.
 
 # Docker
-First, create the docker image from the Dockerfile. from the project root
+First, create the docker image from the Dockerfile. Rrom the project root run
 ```text
 docker build -t hero.webapp:0.0.1 .
 ```
-Once the image is build you can run the image in docker with
+Once the image is built you can run the image in docker with
 ```text
 docker run -it --rm --name hero-web-app -p 7001:80  hero.webapp:0.0.1
 ```
