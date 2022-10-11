@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using TestWebAPI.Models;
+using TestWebAPI.Repository;
 
 namespace TestWebAPI.Controllers
 {
@@ -8,60 +9,70 @@ namespace TestWebAPI.Controllers
     [ApiController]
     public class HeroController : ControllerBase
     {
-        // GET: api/Hero
-        [HttpGet]
-        public ActionResult<IEnumerable<Hero>> Get([FromQuery]string? name)
+        private readonly IRepository<Hero> _repository;
+
+        public HeroController(IRepository<Hero> repository)
         {
-            var heroes = MockHeroes.GetHeroes();
-            if (name is not null)
-            {
-                heroes = heroes.Where(h => h.name.ToLower().Contains(name.ToLower()));
-            }
-            return heroes.ToList();
+            _repository = repository;
         }
 
-        // GET: api/Hero/5
-        [HttpGet("{id}", Name = "Get")]
-        public ActionResult<Hero> Get(int id)
+        [HttpGet]
+        public async Task<ActionResult<Hero>> GetAsync([FromQuery] string? id, [FromQuery] string? name)
         {
-            var hero = MockHeroes.GetHeroes().FirstOrDefault(h => h.id == id);
-            if (hero is not null)
+            if (id is not null)
+            {
+                var hero = await _repository.GetAsync(Guid.Parse(id));
                 return Ok(hero);
-            
-            return NotFound();
+            }
+
+            if (name is not null)
+            {
+                var hero = await _repository.GetAllAsync();
+                var heroFiltered = hero.Where(h => h.Name.ToLower().Contains(name.ToLower()));
+                return Ok(heroFiltered);
+            }
+
+            var result = await _repository.GetAllAsync();
+            return Ok(result);
         }
 
         // POST: api/Hero
         [HttpPost]
-        public ActionResult Post([FromBody] Hero hero)
+        public async Task<ActionResult<Hero>> Post([FromBody] Hero hero)
         {
-            if (hero.name is null)
+            if (hero.Name is null)
                 return NotFound();
 
-            var newHero = MockHeroes.AddHero(hero);
+            var newHero = new Hero(Guid.NewGuid(),hero.Name);
+            await _repository.CreateAsync(newHero);
+            
+            var actionName = nameof(GetAsync);
+            // return Ok(CreatedAtAction(actionName, new {id = newHero.Id}, newHero));
             return Ok(newHero);
         }
 
         // PUT: api/Hero/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Hero hero)
+        public async Task<IActionResult> PutAsync(string id, [FromBody] Hero hero)
         {
-            var updateHero = MockHeroes.GetHeroes().FirstOrDefault(h => h.id == id);
-            if (updateHero is null)
-                return NotFound();
+            var existingHero = await _repository.GetAsync(hero.Id);
+            if (existingHero is null) return NotFound();
 
-            var result = MockHeroes.UpdateHero(hero);
+            existingHero.Name = hero.Name;
+            await _repository.UpdateAsync(existingHero);
 
-            return Ok(result);
+            return NoContent();
         }
 
         // DELETE: api/Hero/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            MockHeroes.DeleteHero(id);
+            var existingHero = _repository.GetAsync(Guid.Parse(id));
+            if (existingHero is null) return NotFound();
 
-            return Ok();
+            await _repository.RemoveAsync(Guid.Parse(id));
+            return NoContent();
         }
     }
 }

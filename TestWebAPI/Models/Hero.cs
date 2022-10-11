@@ -1,14 +1,14 @@
 namespace TestWebAPI.Models;
 
-public class Hero
+public class Hero : IEntity
 {
-    public int id { get; set; }
-    public string name { get; set; }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
 
-    public Hero(int Id, string Name)
+    public Hero(Guid id, string name)
     {
-        id = Id;
-        name = Name;
+        Id = id;
+        Name = name;
     }
 }
 
@@ -21,15 +21,15 @@ public static class MockHeroes
         {
             var heroesList = new List<Hero>
             {
-                new Hero(12, "Dr. Nice"),
-                new Hero(13, "Bombasto"),
-                new Hero(14, "Celeritas"),
-                new Hero(15, "Magneta"),
-                new Hero(16, "RubberMan"),
-                new Hero(17, "Dynama"),
-                new Hero(18, "Dr. IQ"),
-                new Hero(19, "Magma"),
-                new Hero(20, "Tornado")
+                new Hero(Guid.NewGuid(), "Dr. Nice"),
+                new Hero(Guid.NewGuid(), "Bombasto"),
+                new Hero(Guid.NewGuid(), "Celeritas"),
+                new Hero(Guid.NewGuid(), "Magneta"),
+                new Hero(Guid.NewGuid(), "RubberMan"),
+                new Hero(Guid.NewGuid(), "Dynama"),
+                new Hero(Guid.NewGuid(), "Dr. IQ"),
+                new Hero(Guid.NewGuid(), "Magma"),
+                new Hero(Guid.NewGuid(), "Tornado")
             };
             Heroes = heroesList;
         }
@@ -39,11 +39,11 @@ public static class MockHeroes
 
     public static Hero AddHero(Hero hero)
     {
-        var newHero = new Hero(Heroes.Max(h => h.id) + 1, hero.name);
+        var newHero = new Hero(Guid.NewGuid(), hero.Name);
         var heroes = Heroes.ToList();
         heroes.Add(newHero);
         Heroes = heroes;
-        return Heroes.FirstOrDefault(h => h.id == newHero.id);
+        return Heroes.FirstOrDefault(h => h.Id == newHero.Id);
     }
 
     public static Hero UpdateHero(Hero hero)
@@ -51,23 +51,23 @@ public static class MockHeroes
         if (!Heroes.Any() || Heroes is null)
             Heroes = GetHeroes();
 
-        var updateHero = Heroes.FirstOrDefault(h => h.id == hero.id);
+        var updateHero = Heroes.FirstOrDefault(h => h.Id == hero.Id);
 
         if (updateHero is null)
             return null;
 
-        updateHero.name = hero.name;
+        updateHero.Name = hero.Name;
 
         return updateHero;
     }
 
-    public static void DeleteHero(int id)
+    public static void DeleteHero(Guid id)
     {
-        var hero = Heroes.FirstOrDefault(h => h.id == id);
+        var hero = Heroes.FirstOrDefault(h => h.Id == id);
 
         if (hero is null)
             return;
 
-        Heroes = Heroes.Where(h => h.id != id);
+        Heroes = Heroes.Where(h => h.Id != id);
     }
 }
